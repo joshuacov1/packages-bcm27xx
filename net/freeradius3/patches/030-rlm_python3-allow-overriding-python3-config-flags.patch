@@ -1,0 +1,68 @@
+From ad96db384e3b71b639c2c8e11586bd26f6851403 Mon Sep 17 00:00:00 2001
+From: Joshua Covington <joshuacov@gmail.com>
+Date: Sat, 28 Nov 2026 15:46:18 +0000
+Subject: [PATCH] rlm_python3: allow overriding python3-config flags
+
+When cross-compiling, python3-config of the build host or a staged
+copy may not be usable. Allow passing the flags directly through
+PYTHON3_CFLAGS and PYTHON3_LDFLAGS. If they are not set, use
+python3-config as before.
+
+Signed-off-by: Joshua Covington <joshuacov@gmail.com>
+---
+--- a/src/modules/rlm_python3/configure
++++ b/src/modules/rlm_python3/configure
+@@ -3343,7 +3343,11 @@ else
+ 				old_CFLAGS="$CFLAGS"
+ 	unset CFLAGS
+ 
+-	python3_cflags=`${PYTHON3_CONFIG_BIN} --cflags`
++	if test "x$PYTHON3_CFLAGS" != x; then
++		python3_cflags="$PYTHON3_CFLAGS"
++	else
++		python3_cflags=`${PYTHON3_CONFIG_BIN} --cflags`
++	fi
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: ${PYTHON3_CONFIG_BIN}'s cflags were \"${python3_cflags}\"" >&5
+ $as_echo "$as_me: ${PYTHON3_CONFIG_BIN}'s cflags were \"${python3_cflags}\"" >&6;}
+ 
+@@ -3441,7 +3445,11 @@ x$ax_compare_version_B" | sed 's/^ *//'
+       fi
+ 
+ 
+-	python3_ldflags=`${PYTHON3_CONFIG_BIN} --ldflags $EMBED`
++	if test "x$PYTHON3_LDFLAGS" != x; then
++		python3_ldflags="$PYTHON3_LDFLAGS"
++	else
++		python3_ldflags=`${PYTHON3_CONFIG_BIN} --ldflags $EMBED`
++	fi
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: ${PYTHON3_CONFIG_BIN}'s ldflags were \"$python3_ldflags}\"" >&5
+ $as_echo "$as_me: ${PYTHON3_CONFIG_BIN}'s ldflags were \"$python3_ldflags}\"" >&6;}
+ 
+--- a/src/modules/rlm_python3/configure.ac
++++ b/src/modules/rlm_python3/configure.ac
+@@ -39,7 +39,11 @@ else
+ 	old_CFLAGS="$CFLAGS"
+ 	unset CFLAGS
+ 
+-	python3_cflags=`${PYTHON3_CONFIG_BIN} --cflags`
++	if test "x$PYTHON3_CFLAGS" != x; then
++		python3_cflags="$PYTHON3_CFLAGS"
++	else
++		python3_cflags=`${PYTHON3_CONFIG_BIN} --cflags`
++	fi
+ 	AC_MSG_NOTICE([${PYTHON3_CONFIG_BIN}'s cflags were \"${python3_cflags}\"])
+ 
+ 	dnl # Convert -I to -isystem to get rid of warnings about issues in Python headers
+@@ -72,7 +76,11 @@ else
+ 	dnl # https://bugs.python.org/issue36721
+ 	AX_COMPARE_VERSION(${PYTHON_VERSION}, [ge], [3.8], [EMBED="--embed"], [])
+ 
+-	python3_ldflags=`${PYTHON3_CONFIG_BIN} --ldflags $EMBED`
++	if test "x$PYTHON3_LDFLAGS" != x; then
++		python3_ldflags="$PYTHON3_LDFLAGS"
++	else
++		python3_ldflags=`${PYTHON3_CONFIG_BIN} --ldflags $EMBED`
++	fi
+ 	AC_MSG_NOTICE([${PYTHON3_CONFIG_BIN}'s ldflags were \"$python3_ldflags}\"])
+ 
+ 	dnl # Strip -Wl,-O1... Is -O even a valid linker flag??
