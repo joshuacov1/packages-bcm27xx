@@ -11,7 +11,7 @@ include $(TOPDIR)/rules.mk
 include ../python3-version.mk
 
 PKG_NAME:=python3
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 PKG_VERSION:=$(PYTHON3_VERSION).$(PYTHON3_VERSION_MICRO)
 
 PKG_SOURCE:=Python-$(PKG_VERSION).tar.xz
@@ -227,7 +227,7 @@ define Build/InstallDev
 		$(PKG_INSTALL_DIR)/usr/bin/python$(PYTHON3_VERSION)-config \
 		$(2)/bin/
 	$(SED) \
-		's|^prefix_real=.*$$$$|prefix_real="$(PYTHON3_DIR)"|' \
+		's|^prefix_real=[^|]*|prefix_real="$(PYTHON3_DIR)"|' \
 		$(2)/bin/python$(PYTHON3_VERSION)-config
 endef
 
